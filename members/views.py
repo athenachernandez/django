@@ -6,15 +6,16 @@ from django.views import generic
 
 from .models import Choice, Question
 
-def index():
-    template = loader.get_template('members/index.html')
+### EXAMPLE
+# def index():
+#     template = loader.get_template('members/index.html')
 
-    context = {
-        'email': email,
-        'loggedIn': loggedIn,
-        'user': request.user,
-    }
-    return HttpResponse(template.render(context, request))
+#     context = {
+#         'email': email,
+#         'loggedIn': loggedIn,
+#         'user': request.user,
+#     }
+#     return HttpResponse(template.render(context, request))
 
 class IndexView(generic.ListView):
     template_name = 'members/index.html'
