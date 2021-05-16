@@ -3,6 +3,8 @@ from django.db.models.fields import EmailField, related
 from django.contrib.auth.models import User
 from .utils import get_random_code
 from django.template.defaultfilters import slugify
+# TODO: might need to combine profiles and posts into one folder because
+# from ..posts.models import Post doesn't work
 
 # Create your models here.
 
@@ -25,13 +27,14 @@ class Profile(models.Model):
     def get_friends_no(self):
         return self.friends.all().count()
 
-    def get_post_no(self):
+    def get_posts_no(self):
+        # print(Post.objects.all())
         return self.posts.all().count()
-    
-    def fet_all_authors_posts(self):
+
+    def get_all_authors_posts(self):
         return self.posts.all()
     
-    def get_likes_given(self):
+    def get_likes_given_no(self):
         likes = self.like_set.all()
         total_liked = 0
         for item in likes:
