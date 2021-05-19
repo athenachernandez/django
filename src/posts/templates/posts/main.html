@@ -13,15 +13,15 @@
                 <div class="ui grid">
                     <div class="row">
                         {% ifequal request.user obj.author.user %}
-                            <a href=""><button class="ui button bwhite-lg ">Update</button></a>
-                            <a href=""><button class="ui button bwhite-lg ">Delete</button></a>
+                            <a href="{% url 'posts:post-update' obj.pk %}"><button class="ui button bwhite-lg ">Update</button></a>
+                            <a href="{% url 'posts:post-delete' obj.pk %}"><button class="ui button bwhite-lg ">Delete</button></a>
                         {% endifequal %}
                     </div>
                 </div>
                     
                 </div>
                 <img class="ui avatar image" src={{obj.author.avatar.url}}> 
-                {{ obj.author }} - {{ obj.created|timesince}} ago
+                {{ obj.author.user }} - {{ obj.created|timesince}} ago
             </div>
             <div class="ui fluid image">
                 {% if obj.image %}
@@ -52,7 +52,7 @@
                 <div class="mb-5">
                   
                 </div>
-                <button class="cmt_btn ui button mb-5">show / hide comments</button>
+                <button class="cmt_btn ui button mb-5">Expand/Collapse Comments</button>
                 <div class="comment-box">
                 {% if obj.comment_set.all %}
                     {% for c in obj.comment_set.all %}
@@ -96,15 +96,15 @@
 
 {% block scripts %} 
     <script>
-        $( document ).ready(function() {
+        $(document).ready(function() {
             let display = false
             $(".cmt_btn").click(function () {
-                if (display===false) {
+                if (display == false) {
                     $(this).next(".comment-box").show("slow");
-                    display=true
+                    display = true
                 } else {
                     $(this).next(".comment-box").hide("slow");
-                    display=false
+                    display = false
                 }  
             });
         });
