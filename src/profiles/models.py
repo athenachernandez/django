@@ -3,8 +3,6 @@ from django.db.models.fields import EmailField, related
 from django.contrib.auth.models import User
 from .utils import get_random_code
 from django.template.defaultfilters import slugify
-# TODO: might need to combine profiles and posts into one folder because
-# from ..posts.models import Post doesn't work
 
 # Create your models here.
 
@@ -70,6 +68,11 @@ STATUS_CHOICES = (
     ('accepted', 'accepted')
 )
 
+class RelationshipManager(models.Manager):
+    def invitations_received(self, receiver):
+        qs = Relationship.objects.filter(receiver=receiver, status='send')
+        return qs
+
 class Relationship(models.Model):
     sender = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='sender')
     receiver = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='receiver')
@@ -77,7 +80,7 @@ class Relationship(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
+    objects = RelationshipManager()
+
     def __str__(self):
         return f"{self.sender}-{self.receiver}-{self.status}"
-
-
