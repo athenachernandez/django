@@ -30,3 +30,23 @@ def invites_received_view(request):
     }
 
     return render(request, 'profiles/myinvites.html', context)
+
+def profiles_list_view(request):
+    user = request.user
+    qs = Profile.objects.get_all_profiles(user)
+
+    context = {
+        'qs' : qs,
+    }
+
+    return render(request, 'profiles/profile_list.html', context)
+
+def invite_profiles_list_view(request):
+    user = request.user
+    qs = Profile.objects.get_all_profiles_to_invite(user)
+
+    context = {
+        'qs' : qs,
+    }
+
+    return render(request, 'profiles/to_invite_list.html', context)
