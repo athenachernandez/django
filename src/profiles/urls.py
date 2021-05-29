@@ -4,7 +4,8 @@ from .views import (
     my_profile_view,
     profiles_list_view,
     invite_profiles_list_view, 
-    ProfileListView
+    ProfileListView,
+    send_invitation
 )
 
 app_name = 'profiles'
@@ -14,4 +15,5 @@ urlpatterns = [
     path('myinvites/', invites_received_view, name='my-invites-view'),
     path('all-profiles/', ProfileListView.as_view(), name='all-profiles-view'),
     path('to-invite/', invite_profiles_list_view, name='invite-profiles-view'),
+    path('send-invite/', send_invitation, name='send-invite'),
 ]
