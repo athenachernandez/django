@@ -1,6 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, resolve_url
 from .models import Profile, Relationship
 from .forms import ProfileModelForm
+from django.views.generic import ListView
+from django.contrib.auth.models import User
 # Create your views here.
 
 def my_profile_view(request):
@@ -31,6 +33,16 @@ def invites_received_view(request):
 
     return render(request, 'profiles/myinvites.html', context)
 
+def invite_profiles_list_view(request):
+    user = request.user
+    qs = Profile.objects.get_all_profiles_to_invite(user)
+
+    context = {
+        'qs' : qs,
+    }
+
+    return render(request, 'profiles/to_invite_list.html', context)
+
 def profiles_list_view(request):
     user = request.user
     qs = Profile.objects.get_all_profiles(user)
@@ -41,12 +53,36 @@ def profiles_list_view(request):
 
     return render(request, 'profiles/profile_list.html', context)
 
-def invite_profiles_list_view(request):
-    user = request.user
-    qs = Profile.objects.get_all_profiles_to_invite(user)
+class ProfileListView(ListView):
+    model = Profile
+    template_name = 'profiles/profile_list.html'
+    # context_object_name = 'qs'
 
-    context = {
-        'qs' : qs,
-    }
+    def get_queryset(self):
+        qs = Profile.objects.get_all_profiles(self.request.user)
+        return qs
 
-    return render(request, 'profiles/to_invite_list.html', context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = User.objects.get(username__iexact=self.request.user)
+        profile = Profile.objects.get(user=user)
+        context['profile'] = profile
+        # Relationship receiver/sender
+        rel_r = Relationship.objects.filter(sender=profile)
+        rel_s = Relationship.objects.filter(receiver=profile)
+        rel_receiver = []
+        rel_sender = []
+
+        for item in rel_r:
+            rel_receiver.append(item.receiver.user)
+        for item in rel_s:
+            rel_receiver.append(item.sender.user)
+
+        context["rel_receiver"] = rel_receiver
+        context["rel_sender"] = rel_sender
+        context['is_empty'] = False
+
+        if len(self.get_queryset()) == 0:
+            context['is_empty'] = True
+
+        return context
