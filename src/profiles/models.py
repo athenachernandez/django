@@ -1,4 +1,5 @@
 from django.db import models
+from django.shortcuts import reverse
 from django.db.models.fields import EmailField, related
 from django.contrib.auth.models import User
 from .utils import get_random_code
@@ -48,6 +49,12 @@ class Profile(models.Model):
 
     objects = ProfileManager()
 
+    def __str__(self):
+        return f"{self.user.username}-{self.created.strftime('%d-%m-%Y')}"
+
+    def get_absolute_url(self):
+        return reverse("profiles:profile-detail-view", kwargs={"slug": self.slug})
+
     def get_friends(self):
         return self.friends.all()
     
@@ -74,20 +81,27 @@ class Profile(models.Model):
         for item in posts:
             total_liked += item.liked.all().count()
         return total_liked
-
-    def __str__(self):
-        return f"{self.user.username}-{self.created.strftime('%d-%m-%Y')}"
     
+    __initial_first_name = None
+    __initial_last_name = None
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__initial_first_name = self.first_name
+        self.__initial_last_name = self.last_name
+
     def save(self, *args, **kwargs):
         exists = False
-        if self.first_name and self.last_name:
-            to_slug = slugify(str(self.first_name) + " " + str(self.last_name))
-            exists = Profile.objects.filter(slug=to_slug).exists()
-            while exists:
-                to_slug = slugify(to_slug + " " + str(get_random_code()))
+        to_slug = self.slug
+        if self.first_name != self.__initial_first_name or self.last_name != self.__initial_last_name or self.slug == "":
+            if self.first_name and self.last_name:
+                to_slug = slugify(str(self.first_name) + " " + str(self.last_name))
                 exists = Profile.objects.filter(slug=to_slug).exists()
-        else:
-            to_slug = str(self.user)
+                while exists:
+                    to_slug = slugify(to_slug + " " + str(get_random_code()))
+                    exists = Profile.objects.filter(slug=to_slug).exists()
+            else:
+                to_slug = str(self.user)
         self.slug = to_slug
         super().save(*args, **kwargs)
 
