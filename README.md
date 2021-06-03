@@ -1,2 +1,10 @@
 # Django Project
-Working towards having a simple social media platform where users can share posts, likes, and comments. If I have time, I'll modify and apply it to a forum for a club called Global Milestone.
+All the basic minimum requirements are reached in both my posts and profiles app.
+
+## The Extra 30%
+- More advanced design throughout using Semantic UI (non Django feature) & the interconnectedness of the website as a whole
+- New user can register through a form (used allauth Django)
+- Used calculated values based on what you found from a query (my main extra feature)
+
+## Final Commit
+[insert here]
