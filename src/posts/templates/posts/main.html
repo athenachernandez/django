@@ -4,7 +4,9 @@
 
 {% block content %}
 <div class="ui grid">
+    <!-- Posts -->
     <div class="eleven wide column">
+        <!-- Going through each post at a time -->
         {% for obj in qs %}
 
         <div class="ui fluid card">
@@ -12,6 +14,7 @@
                 <div class="right floated meta">
                 <div class="ui grid">
                     <div class="row">
+                        <!-- Will only display these buttons if it's the user's own post -->
                         {% ifequal request.user obj.author.user %}
                             <a href="{% url 'posts:post-update' obj.pk %}"><button class="ui button bwhite-lg ">Update</button></a>
                             <a href="{% url 'posts:post-delete' obj.pk %}"><button class="ui button bwhite-lg ">Delete</button></a>
@@ -21,9 +24,11 @@
                     
                 </div>
                 <img class="ui avatar image" src={{obj.author.avatar.url}}> 
+                <!-- Displays this at the top of each post-->
                 {{ obj.author.user }} - {{ obj.created|timesince}} ago
             </div>
             <div class="ui fluid image">
+                <!-- In case there's an image uploaded -->
                 {% if obj.image %}
                     <img src={{obj.image.url}}>
                 {% endif %}
@@ -35,12 +40,14 @@
                         {% csrf_token %}
                         <input type="hidden" name="post_id" value={{obj.id}}>
                             <button type="submit" class="ui button like-btn{{obj.id}}">
+                                <!-- Reference the likes and unlike counters from the views -->
                                 {% if profile not in obj.liked.all %}
                                     Like
                                 {% else %}
                                     Unlike
                                 {% endif %}
                             </button>
+                            <!-- Had to use grid so that the word likes would appear underneath the number -->
                             <div class="ui grid">
                                 <div class="column">
                                     <div class="like-count{{obj.id}}">{{obj.num_likes}}</div>
@@ -61,6 +68,7 @@
                 <button class="cmt_btn ui button mb-5">Expand/Collapse Comments</button>
                 <div class="comment-box">
                 {% if obj.comment_set.all %}
+                    <!-- Loops through comments if there are comments -->
                     {% for c in obj.comment_set.all %}
                         <div class="ui segment mb-5">
                             <img class="ui avatar image" src={{c.user.avatar.url}}>
@@ -71,7 +79,7 @@
                 {% endif %}
                 </div>
   
-                <form action="" method="POST"class='ui fluid form'>
+                <form action="" method="POST" class='ui fluid form'>
                     {% csrf_token %}
                     <input type="hidden" name="post_id" value={{obj.id}}>
                     {{ c_form }}
@@ -83,6 +91,7 @@
 
         {% endfor %}
     </div>
+     <!-- For the right hand side where users can upload their content -->
     <div class="five wide column">
         <div class="ui segment">
             {% if post_added %}
@@ -112,6 +121,8 @@
                 }  
             });
 
+            // Changed the like using AJAX to a counter based so that the page wouldn't reload and so that it would
+            // stay in the spot on the page when you like/unlike
             $('.like-form').submit(function(e) {
                 e.preventDefault()
                 const post_id = $(this).attr('id')

@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
 
+# Added login required to add an authentication aspect and limit the loopholes
 @login_required
 def my_profile_view(request):
     profile = Profile.objects.get(user=request.user)
@@ -34,6 +35,7 @@ def invites_received_view(request):
     results = list(map(lambda x: x.sender, qs))
     is_empty = False
 
+    # Added a boolean to display a different message about having 0 invites
     if len(results) == 0:
         is_empty = True
 
@@ -46,6 +48,7 @@ def invites_received_view(request):
 
 @login_required
 def accept_invitation(request):
+    # Organizes the data for the relationships between the user and the requester to accepted
     if request.method == 'POST':
         pk = request.POST.get('profile_pk')
         sender = Profile.objects.get(pk=pk)
@@ -59,6 +62,7 @@ def accept_invitation(request):
 
 @login_required
 def reject_invitation(request):
+    # Organizes the data for the relationships between the user and the requester to rejected
     if request.method == 'POST':
         pk = request.POST.get('profile_pk')
         sender = Profile.objects.get(pk=pk)
@@ -68,6 +72,7 @@ def reject_invitation(request):
     return redirect('profiles:my-invites-view')
 
 @login_required
+# Method just to gather the invite Profile's objects
 def invite_profiles_list_view(request):
     user = request.user
     qs = Profile.objects.get_all_profiles_to_invite(user)
@@ -79,6 +84,7 @@ def invite_profiles_list_view(request):
     return render(request, 'profiles/to_invite_list.html', context)
 
 @login_required
+# Method to gather the Profile's objects
 def profiles_list_view(request):
     user = request.user
     qs = Profile.objects.get_all_profiles(user)
@@ -106,7 +112,8 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
         # Relationship receiver/sender
         rel_r = Relationship.objects.filter(sender=profile)
         rel_s = Relationship.objects.filter(receiver=profile)
-        rel_receiver = []
+        # Created separate lists to append user's later on
+        rel_receiver = []  
         rel_sender = []
 
         for item in rel_r:
@@ -114,6 +121,7 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
         for item in rel_s:
             rel_receiver.append(item.sender.user)
 
+        # Updated the context
         context["rel_receiver"] = rel_receiver
         context["rel_sender"] = rel_sender
         context['posts'] = self.get_object().get_all_authors_posts()
@@ -121,6 +129,7 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
 
         return context
 
+# Same idea as ProfileDetailView
 class ProfileListView(LoginRequiredMixin, ListView):
     model = Profile
     template_name = 'profiles/profile_list.html'
@@ -146,6 +155,7 @@ class ProfileListView(LoginRequiredMixin, ListView):
         for item in rel_s:
             rel_receiver.append(item.sender.user)
 
+        # Updating the context
         context["rel_receiver"] = rel_receiver
         context["rel_sender"] = rel_sender
         context['is_empty'] = False
@@ -162,7 +172,8 @@ def send_invitation(request):
         user = request.user
         sender = Profile.objects.get(user=user)
         receiver = Profile.objects.get(pk=pk)
-        rel = Relationship.objects.create(sender=sender, receiver=receiver, status='send')
+        # Makes sure the sender and receiver match in order to be able to send a request
+        rel = Relationship.objects.create(sender=sender, receiver=receiver, status='send') 
         return redirect(request.META.get('HTTP_REFERER'))
     return redirect('profiles:my-profile-view')
 
@@ -173,6 +184,7 @@ def remove_from_friends(request):
         user = request.user
         sender = Profile.objects.get(user=user)
         receiver = Profile.objects.get(pk=pk)
+        # Either way works for this case: receiver vs sender
         rel = Relationship.objects.get(
             (Q(sender=sender) & Q(receiver=receiver)) | (Q(sender=receiver) & Q(receiver=sender))
         )

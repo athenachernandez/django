@@ -23,7 +23,7 @@ def post_comment_create_and_list_view(request):
     post_added = False
 
     profile = Profile.objects.get(user=request.user)
-
+    # Post forms
     if 'submit_p_form' in request.POST:
         print(request.POST)
         p_form = PostModelForm(request.POST, request.FILES)
@@ -34,6 +34,7 @@ def post_comment_create_and_list_view(request):
             p_form = PostModelForm()
             post_added = True
 
+    # Comment forms
     if 'submit_c_form' in request.POST:
         c_form = CommentModelForm(request.POST)
         if c_form.is_valid():
@@ -61,6 +62,7 @@ def like_unlike_post(request):
         post_obj = Post.objects.get(id=post_id)
         profile = Profile.objects.get(user=user)
 
+        # Keeps track of liked posts to display on the 'my profile' page
         if profile in post_obj.liked.all():
             post_obj.liked.remove(profile)
         else:
@@ -68,6 +70,7 @@ def like_unlike_post(request):
         
         like, created = Like.objects.get_or_create(user=profile, post_id=post_id)
 
+        # Switch values if clicked
         if not created:
             if like.value == 'Like':
                 like.value = 'Unlike'
@@ -94,6 +97,7 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
     # Equivalent to: success_url = '/posts/'
     success_url = reverse_lazy('posts:main-post-view')
 
+    # Added this function in case you reloaded when you were logged in a different account
     def get_object(self, *args, **kwargs):
         pk = self.kwargs.get('pk')
         obj = Post.objects.get(pk=pk)
@@ -108,6 +112,7 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'posts/update.html'
     success_url = reverse_lazy('posts:main-post-view')
 
+    # Same idea as PostDeleteView class but for updating posts
     def form_valid(self, form):
         profile = Profile.objects.get(user=self.request.user)
         if form.instance.author == profile:

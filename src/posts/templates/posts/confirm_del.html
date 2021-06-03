@@ -5,6 +5,7 @@
 
 {% block content %}
     {% if messages %}
+        <!-- Loop through the messages to see which has a warning -->
         {% for message in messages %}
             {% if 'warning' in message.tags %}
                 <div class='ui negative message'>

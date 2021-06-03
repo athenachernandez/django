@@ -9,6 +9,7 @@ Profile Detail
     <br />
         <div class="row">
             <div class="four wide column">
+                <!-- Using the attributes of the object to display the posts, likes given, likes received, and friends -->
                 <img class="ui medium rounded image" src={{object.avatar.url}}
                 <br/>
                 <h1>{{object.user}}</h1>
@@ -30,6 +31,7 @@ Profile Detail
                         <div class="ui label">{{object.get_friends_no}}</div>
                     </div>
                 </div>
+                <!-- Shows the add friend button if they aren't friends -->
                 {% if object.user not in rel_receiver and object.user not in rel_sender %}
                         <form action="{% url 'profiles:send-invite' %}" method="POST">
                             {% csrf_token %}
@@ -38,10 +40,11 @@ Profile Detail
                         </form>
                 {% endif %}
 
+                <!-- User is requested button if they are not friends but they button add to friends was clicked -->
                 {% if object.user in rel_receiver and request.user not in object.friends.all %}
                     <button class="ui disabled button mb-5 w-big"><i class="user icon"></i>Pending</button>
                 {% endif %}
-
+                <!-- Remove from friends -->
                 {% if request.user in object.friends.all %}
                     <form action="{% url 'profiles:remove-friend' %}" method="POST">
                         {% csrf_token %}

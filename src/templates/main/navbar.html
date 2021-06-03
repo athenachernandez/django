@@ -1,3 +1,4 @@
+<!-- Simplified the url so I could use it in the hrefs of the links -->
 {% url 'home-view' as path_to_home %}
 {% url 'posts:main-post-view' as path_to_posts %}
 {% url 'profiles:my-profile-view' as path_to_my_profile %}
@@ -12,16 +13,18 @@
       </a>
       {% if request.user.is_authenticated %}
       <a href="{{path_to_posts}}" class="{% if request.path == path_to_posts %}active{% endif %} item">
-          Board
+          Posts
       </a>
       {% endif %}
   
       <div class="right menu">
-          {% if request.user.is_authenticated %}
+        <!-- If logged in-->
+        {% if request.user.is_authenticated %}
           <div class="item">
               <div class="ui floating dropdown icon button teal"> Friends
                   <i class="dropdown icon"></i>
                   <div class="menu">
+                    <!-- Referenced the URL at the top of the file and uses an if statement to check that the requested path matches -->
                       <a href="{{path_to_all_profiles}}" class="{% if request.path == path_to_all_profiles %}active{% endif %} item">
                           All Profiles
                       </a>
@@ -33,30 +36,32 @@
                       </a>
                   </div>
                </div>
-          </div>
-               <div class="item">
-                <form action="" method="GET">
-                  <div class="ui action left icon input">
-                  <input class="prompt" type="text" name='q' placeholder="Search">
-                  <i class="search icon"></i>
-                  <button type='submit' class="ui button">Search</button>
-                  </div>
-              </form>
-              </div>
-          
-              <a href="{{path_to_my_profile}}" class="{% if request.path == path_to_my_profile %}active{% endif %} item">
+            </div>
+                <div class="item">
+                    <form action="" method="GET">
+                        <div class="ui action left icon input">
+                            <!-- IMPORTANT: Search button doesn't actually work but I wanted to format it for if I work on this project later on -->
+                            <input class="prompt" type="text" name='q' placeholder="Search">
+                            <i class="search icon"></i>
+                            <button type='submit' class="ui button">Search</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- Profile pic-->
+                <a href="{{path_to_my_profile}}" class="{% if request.path == path_to_my_profile %}active{% endif %} item">
                 <img src={{picture.url}} class="ui avatar image" />&nbsp;
                    {{ request.user }}
-              </a>
+                </a>
   
-              <a href="{% url 'account_logout'%}" class="ui item">
-                  Logout
-              </a>
-          {% else %}
-          <a href="{% url 'account_login'%}" class="ui item">
+                <a href="{% url 'account_logout'%}" class="ui item">
+                    Logout
+                </a>
+            <!-- If not logged in -->
+            {% else %}
+                <a href="{% url 'account_login'%}" class="ui item">
                   Login
-              </a>
-          {% endif %}
-      </div>
+                </a>
+            {% endif %}
+        </div>
     </div>
   </div>

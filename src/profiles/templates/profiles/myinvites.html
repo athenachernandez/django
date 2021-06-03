@@ -9,6 +9,7 @@ My Invites
         <h1>No invitations here.</h1>
     {% endif %}
     
+    <!-- Loops through all the users -->
     {% for obj in qs %}
         <div class="ui segment">
             <div class="ui grid">
@@ -22,6 +23,7 @@ My Invites
                         <a href="">
                             <button class="ui primary button w-big mb-5">See profile</button>
                         </a>
+                        <!-- Accept invitation -->
                         <form action="{% url 'profiles:accept-invite' %}" method="POST">
                             {% csrf_token %}
                             <input type="hidden" name="profile_pk" value={{obj.pk}}></input>
@@ -30,6 +32,7 @@ My Invites
                                 Accept invite
                             </button>
                         </form>
+                        <!-- Deny invite -->
                         <form action="{% url 'profiles:reject-invite' %}" method="POST">
                             {% csrf_token %}
                             <input type="hidden" name="profile_pk" value={{obj.pk}}></input>

@@ -9,6 +9,7 @@ Update Post
         <h3>Update Post</h3>
         <form action="" method="POST" class="ui form" enctype="multipart/form-data">
             {% csrf_token %}
+            <!-- Inserts the post that the user selected to edit -->
             {{form}}
             <button type="submit" class="ui button primary mt-5">Update</button>
         </form>
