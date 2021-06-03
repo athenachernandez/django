@@ -1,6 +1,9 @@
 $(document).ready(function() {
+    console.log('hello world')
     $('#modal-btn').click(function() {
         $('.ui.modal')
-            .modal('show');
+        .modal('show')
+        ;
     })
+    $('.ui.dropdown').dropdown()
 })

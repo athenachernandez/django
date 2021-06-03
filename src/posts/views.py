@@ -1,3 +1,4 @@
+from django.contrib.auth import login
 from django.http.response import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -6,9 +7,12 @@ from profiles.models import Profile
 from .forms import PostModelForm, CommentModelForm
 from django.views.generic import UpdateView, DeleteView
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 
+@login_required
 def post_comment_create_and_list_view(request):
     qs = Post.objects.all()
     profile = Profile.objects.get(user=request.user)
@@ -49,6 +53,7 @@ def post_comment_create_and_list_view(request):
 
     return render(request, 'posts/main.html', context)
 
+@login_required
 def like_unlike_post(request):
     user = request.user
     if request.method == 'POST':
@@ -83,7 +88,7 @@ def like_unlike_post(request):
 
     return redirect('posts:main-post-view')
 
-class PostDeleteView(DeleteView):
+class PostDeleteView(LoginRequiredMixin, DeleteView):
     model = Post
     template_name = 'posts/confirm_del.html'
     # Equivalent to: success_url = '/posts/'
@@ -97,7 +102,7 @@ class PostDeleteView(DeleteView):
 
         return obj
 
-class PostUpdateView(UpdateView):
+class PostUpdateView(LoginRequiredMixin, UpdateView):
     form_class = PostModelForm
     model = Post
     template_name = 'posts/update.html'
